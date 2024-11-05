@@ -133,6 +133,7 @@ public class Bank_third_form extends JFrame implements ActionListener {
         String Adharregix = "^[0-9]+[0-9]+[0-9]$";
         String incomeregix = "^[0-9]+[0-9]+[0-9]$";
 
+
         if (e.getSource() == clr_btn) {
             adhar_field.setText("");
             pan_field.setText("");
@@ -143,36 +144,33 @@ public class Bank_third_form extends JFrame implements ActionListener {
         }
 
         if (e.getSource() == Next_btn) {
-
             if (adharNumber.isEmpty() || panNumber.isEmpty() || income.isEmpty())
             {
                 JOptionPane.showMessageDialog(this, "Please Enter All Details.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
-            if (occupationComboBox.getSelectedItem().equals("Select Options")) {
+            else if (occupationComboBox.getSelectedItem().equals("Select Options")) {
                 JOptionPane.showMessageDialog(this, "Please select an option.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
 
-            if (!r1.isSelected() && !r2.isSelected()){
+            else if (!r1.isSelected() && !r2.isSelected()){
                 JOptionPane.showMessageDialog(this, "Please select marital status.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
-            if (panNumber.equals(panRegex))
+
+            else if (panNumber.equals(panRegex))
             {
                 JOptionPane.showMessageDialog(this, "Please Enter Pan Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
-            if (!adharNumber.matches(Adharregix)){
+
+            else if (!adharNumber.matches(Adharregix)){
                 JOptionPane.showMessageDialog(this, "Please Enter Adhar Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
-            if (!income.matches(incomeregix)){
+
+            else if (!income.matches(incomeregix)){
                 JOptionPane.showMessageDialog(this, "Please Enter income Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
             }
 
 
+        }else {
 
         }
     }

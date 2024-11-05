@@ -8,18 +8,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.Random;
+import java.sql.*;
 
 public class Bank_first_form extends JFrame implements ActionListener {
 
-    Random ran = new Random();
-    long first4 = (ran.nextLong() % 9000L) + 1000L;
-    String first = " " + Math.abs(first4);
-
+    Sign_up signUpObj = new Sign_up();
+    String first = signUpObj.first;
     JTextField textName, textM_name, textL_name, text_father_n, text_mother_n;
     JButton Nxt_btn, clr_btn;
-
-    JDateChooser datefield; // Declare the JDateChooser at class level
-
+    JDateChooser dateChooser; // Declare the JDateChooser at class level
     JRadioButton r1,r2,r3;
 
     Bank_first_form() {
@@ -114,10 +111,10 @@ public class Bank_first_form extends JFrame implements ActionListener {
         dob.setForeground(new Color(41, 40, 40));
         add(dob);
 
-        datefield = new JDateChooser(); // Initialize here
-        datefield.setForeground(new Color(132, 250, 68));
-        datefield.setBounds(450, 373, 380, 40);
-        add(datefield);
+        dateChooser = new JDateChooser(); // Initialize here
+        dateChooser.setForeground(new Color(132, 250, 68));
+        dateChooser.setBounds(450, 373, 380, 40);
+        add(dateChooser);
 
         JLabel label8 = new JLabel("Father's Name:  ");
         label8.setBounds(250, 420, 350, 50);
@@ -168,58 +165,67 @@ public class Bank_first_form extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String Fname = textName.getText().trim();
-        String Mname = textM_name.getText().trim();
-        String Lname = textL_name.getText().trim();
-        String Father_name = text_father_n.getText().trim();
-        String Mother_name = text_mother_n.getText().trim();
-        Date dateOfBirth = datefield.getDate();// Get the selected date
+        String Fname = textName.getText();
+        String Mname = textM_name.getText();
+        String Lname = textL_name.getText();
+        String dob = ((JTextField) dateChooser.getDateEditor().getUiComponent()).getText();
+        String Father_name = text_father_n.getText();
+        String Mother_name = text_mother_n.getText();
 
-        try {
-            if (e.getSource() == clr_btn) {
-                textName.setText("");
-                textM_name.setText("");
-                textL_name.setText("");
-                text_father_n.setText("");
-                text_mother_n.setText("");
-                datefield.setDate(null); // Clear the date field
-            } else if (e.getSource() == Nxt_btn) {
+        String gender = null;
+        if (r1.isSelected()) {
+            gender = "Male";
+        } else if (r2.isSelected()) {
+            gender = "Female";
+        } else if (r3.isSelected()) {
+            gender = "Other";
+        }
 
-                if (Fname.isEmpty())  {
-                    JOptionPane.showMessageDialog(this, "Please Enter First name");
-                    return;
-                }
+        if (e.getSource() == clr_btn) {
+            textName.setText("");
+            textM_name.setText("");
+            textL_name.setText("");
+            text_father_n.setText("");
+            text_mother_n.setText("");
+            dateChooser.setDate(null); // Clear the date field
+        }
 
-
-                if (!r1.isSelected() && !r2.isSelected() && !r3.isSelected())
-                {
-                    JOptionPane.showMessageDialog(this, "Please Choose the Gender");
-                    return;
-                }
-                if (Lname.isEmpty())  {
-                    JOptionPane.showMessageDialog(this, "Please Enter Last name");
-                    return;
-                }
-
-                if (Father_name.isEmpty() && Mother_name.isEmpty())  {
-                    JOptionPane.showMessageDialog(this, "Please Enter Parent details");
-                    return;
-                }
-
-                if (dateOfBirth == null)  {
-                    JOptionPane.showMessageDialog(this, "Please Enter Date of Birth");
-                    return;
-                }
-                // Proceed with the next steps
-
-                if (r1.isEnabled() && r2.isSelected() && r3.isSelected())
-                {
-                    JOptionPane.showMessageDialog(this, "Please Enter Your Gender");
-                    return;
-                }
+        if (e.getSource() == Nxt_btn) {
+            if (Fname.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please Enter First name");
+                return;
+            } else if (!r1.isSelected() && !r2.isSelected() && !r3.isSelected()) {
+                JOptionPane.showMessageDialog(this, "Please Choose the Gender");
+                return;
+            } else if (Lname.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please Enter Last name");
+                return;
+            } else if (Father_name.isEmpty() && Mother_name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please Enter Parent details");
+                return;
+            } else if (dob.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please Enter Date of Birth");
+                return;
             }
-        } catch (Exception E) {
-            E.fillInStackTrace();
+
+            try {
+                DatabaseConnection con2 = new DatabaseConnection();
+                String firstquery = "INSERT INTO account(firstName, middleName, lastName, dob, fatherName, motherName, gender) VALUES(?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement pstmt = con2.connection.prepareStatement(firstquery);
+                pstmt.setString(1, Fname);
+                pstmt.setString(2, Mname);
+                pstmt.setString(3, Lname);
+                pstmt.setString(4, dob);
+                pstmt.setString(5, Father_name);
+                pstmt.setString(6, Mother_name);
+                pstmt.setString(7, gender);
+                pstmt.executeUpdate();
+                pstmt.close(); // Close the PreparedStatement
+                // Close the connection
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage());
+            }
         }
     }
 

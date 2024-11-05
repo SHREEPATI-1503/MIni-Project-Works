@@ -6,7 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Open_new_account extends JFrame implements ActionListener {
-JButton button,exitbtn;
+    JButton button, exitbtn;
+
     Open_new_account() {
 
 
@@ -24,14 +25,13 @@ JButton button,exitbtn;
         add(button);
 
 
-
-       exitbtn = new JButton("Exit");
-       exitbtn.setForeground(new Color(0, 0, 0));
-       exitbtn.setBackground(Color.white);
-       exitbtn.setFont(new Font("Arial", Font.BOLD, 11));
-       exitbtn.setBounds(960, 560, 60, 40);
-       exitbtn.addActionListener(this);
-       add(exitbtn);
+        exitbtn = new JButton("Exit");
+        exitbtn.setForeground(new Color(0, 0, 0));
+        exitbtn.setBackground(Color.white);
+        exitbtn.setFont(new Font("Arial", Font.BOLD, 11));
+        exitbtn.setBounds(960, 560, 60, 40);
+        exitbtn.addActionListener(this);
+        add(exitbtn);
 
         ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icon/man2-showing-image-transformed.jpeg")); // ADDING IMAGE LOCATION PATH IN THE QUOTES
         Image i2 = i1.getImage().getScaledInstance(850, 450, Image.SCALE_DEFAULT);
@@ -47,21 +47,18 @@ JButton button,exitbtn;
         setBackground(new Color(149, 14, 14));
         setVisible(true);
     }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        try
-        {
-            if(e.getSource() == button)
-            {
-
+        try {
+            if (e.getSource() == button) {
+                new Bank_first_form();
             }
-        }catch (Exception E){
+        } catch (Exception E) {
             E.fillInStackTrace();
         }
     }
-
-    public static void main(String [] a){
-        new Open_new_account();
-    }
 }
+
+
 

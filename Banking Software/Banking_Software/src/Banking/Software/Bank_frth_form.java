@@ -33,27 +33,27 @@ public class Bank_frth_form extends JFrame implements ActionListener {
         Saving_Ac = new JRadioButton("Savings Account");
         Saving_Ac.setFont(new Font("Arial", Font.BOLD, 18));
         Saving_Ac.setBounds(250, 150, 250, 50);
-        Saving_Ac.setBackground(new Color(88, 141, 214));
+        Saving_Ac.setBackground(new Color(105, 105, 204));
         add(Saving_Ac);
 
         Fixed_Ac = new JRadioButton("Fixed Desposite Account");
         Fixed_Ac.setFont(new Font("Arial", Font.BOLD, 18));
         Fixed_Ac.setBounds(550, 150, 250, 50);
-        Fixed_Ac.setBackground(new Color(88, 141, 214));
+        Fixed_Ac.setBackground(new Color(105, 105, 204));
         add(Fixed_Ac);
 
 
         Current_Ac = new JRadioButton("Current Account");
         Current_Ac.setFont(new Font("Arial", Font.BOLD, 18));
         Current_Ac.setBounds(250, 200, 250, 50);
-        Current_Ac.setBackground(new Color(88, 141, 214));
+        Current_Ac.setBackground(new Color(105, 105, 204));
         add(Current_Ac);
 
 
         Recurring_Ac = new JRadioButton("Recurring Deposite Account");
         Recurring_Ac.setFont(new Font("Arial", Font.BOLD, 18));
         Recurring_Ac.setBounds(550, 200, 300, 50);
-        Recurring_Ac.setBackground(new Color(88, 141, 214));
+        Recurring_Ac.setBackground(new Color(105, 105, 204));
         add(Recurring_Ac);
 
         ButtonGroup AccountType = new ButtonGroup();
@@ -83,45 +83,45 @@ public class Bank_frth_form extends JFrame implements ActionListener {
         service_r.setForeground(new Color(41, 40, 40));
         add(service_r);
 
-        JCheckBox Atm_card = new JCheckBox("Atm Card");
-        Atm_card.setForeground(new Color(0,0,0));
-        Atm_card.setBackground(new Color(233,12,3));
-        Atm_card.setFont(new Font("Arial", Font.PLAIN, 20));
-        Atm_card.setBounds(250,390,300,50);
-        add(Atm_card);
+        JCheckBox Atmcard = new JCheckBox("Atm Card");
+        Atmcard.setForeground(new Color(0,0,0));
+        Atmcard.setBackground(new Color(105, 105, 204));
+        Atmcard.setFont(new Font("Arial", Font.PLAIN, 20));
+        Atmcard.setBounds(250,390,300,50);
+        add(Atmcard);
 
-        JCheckBox Cheque_book = new JCheckBox("Cheque Book");
-        Cheque_book.setForeground(new Color(0,0,0));
-        Cheque_book.setBackground(new Color(233,12,3));
-        Cheque_book.setFont(new Font("Arial", Font.PLAIN, 20));
-        Cheque_book.setBounds(550,390,300,50);
-        add(Cheque_book);
+        JCheckBox Chequebook = new JCheckBox("Cheque Book");
+        Chequebook.setForeground(new Color(0,0,0));
+        Chequebook.setBackground(new Color(105, 105, 204));
+        Chequebook.setFont(new Font("Arial", Font.PLAIN, 20));
+        Chequebook.setBounds(550,390,300,50);
+        add(Chequebook);
 
 
         JCheckBox statement = new JCheckBox("E-Statement");
         statement.setForeground(new Color(0,0,0));
-        statement.setBackground(new Color(233,12,3));
+        statement.setBackground(new Color(105, 105, 204));
         statement.setFont(new Font("Arial", Font.PLAIN, 20));
         statement.setBounds(250,435,300,50);
         add(statement);
 
         JCheckBox mblbanking = new JCheckBox("Internet Banking");
         mblbanking.setForeground(new Color(0,0,0));
-        mblbanking.setBackground(new Color(233,12,3));
+        mblbanking.setBackground(new Color(105, 105, 204));
         mblbanking.setFont(new Font("Arial", Font.PLAIN, 20));
         mblbanking.setBounds(550,435,300,50);
         add(mblbanking);
 
         JCheckBox emailalt = new JCheckBox("Email ALert");
         emailalt.setForeground(new Color(0,0,0));
-        emailalt.setBackground(new Color(233,12,3));
+        emailalt.setBackground(new Color(105, 105, 204));
         emailalt.setFont(new Font("Arial", Font.PLAIN, 20));
         emailalt.setBounds(250,475,300,50);
         add(emailalt);
 
         JCheckBox smsAlert = new JCheckBox("Sms Alert");
         smsAlert.setForeground(new Color(0,0,0));
-        smsAlert.setBackground(new Color(233,12,3));
+        smsAlert.setBackground(new Color(105, 105, 204));
         smsAlert.setFont(new Font("Arial", Font.PLAIN, 20));
         smsAlert.setBounds(550,475,300,50);
         add(smsAlert);
@@ -156,6 +156,35 @@ public class Bank_frth_form extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
+        String ownerType = (String) AccountOwner.getSelectedItem();
+        String accountTp = null;
+        if (Saving_Ac.isSelected()) {
+            accountTp = "Saving Account";
+        }
+        else if(Recurring_Ac.isSelected()) {
+            accountTp = "Recurring Account";
+        }
+        else if (Fixed_Ac.isSelected()){
+            accountTp = "Fixed Account";
+        }else {
+            accountTp = "Current Account";
+        }
+
+     
+
+
+
+        if (AccountOwner.getSelectedItem().equals("Select Options")) {
+            JOptionPane.showMessageDialog(this, "Please select an option.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        }else if (!Saving_Ac.isSelected() && !Fixed_Ac.isSelected() && !Recurring_Ac.isSelected() && !Current_Ac.isSelected())
+        {
+            JOptionPane.showMessageDialog(this, "Please select Account Type.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
+
+
         try{
 
             if (e.getSource() == Clr_btn)

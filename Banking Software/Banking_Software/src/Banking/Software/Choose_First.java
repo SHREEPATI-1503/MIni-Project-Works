@@ -12,23 +12,23 @@ public class Choose_First extends JFrame implements ActionListener {
 
 
         //ADDING THE ADMIN BUTTON
-        login_btn = new JButton("Admin");
-        login_btn.setForeground(new Color(255, 255, 255));
-        login_btn.setBackground(new Color(0x0000B5));
-        login_btn.setFont(new Font("Arial", Font.BOLD, 15));
-        login_btn.setBounds(470, 390, 100, 40);
-        login_btn.addActionListener(this);
-        add(login_btn);
+        Emp_btn = new JButton("Admin");
+        Emp_btn.setForeground(new Color(255, 255, 255));
+        Emp_btn.setBackground(new Color(0x0000B5));
+        Emp_btn.setFont(new Font("Arial", Font.BOLD, 15));
+        Emp_btn.setBounds(470, 390, 100, 40);
+        Emp_btn.addActionListener(this);
+        add(Emp_btn);
 
 
         //ADDING THE SIGN IN BUTTON
-        Emp_btn = new JButton("Sign in");
-        Emp_btn.setForeground(new Color(255, 255, 255));
-        Emp_btn.setBackground(new Color(0x6262DD));
-        Emp_btn.setFont(new Font("Arial", Font.BOLD, 30));
-        Emp_btn.setBounds(370, 220, 300, 60);
-        Emp_btn.addActionListener(this);
-        add(Emp_btn);
+        login_btn = new JButton("Sign in");
+        login_btn.setForeground(new Color(255, 255, 255));
+        login_btn.setBackground(new Color(0x6262DD));
+        login_btn.setFont(new Font("Arial", Font.BOLD, 30));
+        login_btn.setBounds(370, 220, 300, 60);
+        login_btn.addActionListener(this);
+        add(login_btn);
 
 
         //ADDING THE SIGN UP BUTTON
@@ -69,6 +69,15 @@ public class Choose_First extends JFrame implements ActionListener {
             if(e.getSource() == login_btn)
             {
 
+            new Login();
+            setVisible(false);
+
+            }else if(e.getSource() == reg_btn)
+            {
+                new Sign_up();
+                setVisible(false);
+            } else if (e.getSource() == Emp_btn) {
+                JOptionPane.showMessageDialog(this, "Comming Soon.....", "Input Error", JOptionPane.ERROR_MESSAGE);
             }
         }catch (Exception E){
             E.fillInStackTrace();

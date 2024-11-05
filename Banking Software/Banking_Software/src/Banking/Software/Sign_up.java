@@ -4,9 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
+import java.util.Random;
 
 public class Sign_up extends JFrame implements ActionListener {
 
+    Random ran = new Random();
+    long first4 = (ran.nextLong() % 9000L) + 1000L;
+    String first = " " + Math.abs(first4);
     // DECLARING THE GLOBAL VARIABLE FOR TEXTFIELE AND LABEL AND BUTTONS
     JLabel label1,label2,label3,label4,label5; // DECLARING THE LABEL
     JTextField emailfield, phonefield; // DECLARING THE 2 TEXT FIELD
@@ -123,38 +128,63 @@ public class Sign_up extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String email = emailfield.getText();
+        String phone = phonefield.getText();
+        String password = new String(pa_passwordfield.getPassword());
+        String confirmPassword = new String(rp_passwordfield.getPassword());
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        String formNumber = first;
+
+
+
+
+
+        if(e.getSource() == clearbtn) // CLEARING ALL TEXT AND PASSWORD FIELD
+        {
+            emailfield.setText("");
+            phonefield.setText("");
+            pa_passwordfield.setText("");
+            rp_passwordfield.setText("");
+
+        }
+
         try
         {
-         if(e.getSource() == signupbtn)
-         {
+            if (email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields must be filled out.");
+            }
 
-             String email = emailfield.getText().trim();
-             String phone = phonefield.getText().trim();
-             String password = new String(pa_passwordfield.getPassword());
-             String confirmPassword = new String(rp_passwordfield.getPassword());
+            else if(!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this, "Passwords do not match.");
+            }
 
-             if (email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                 JOptionPane.showMessageDialog(this, "All fields must be filled out.");
-                 return;
-             }
+            else if (!email.matches(emailRegex)) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+         else {
+             DatabaseConnection con1 = new DatabaseConnection();
+                String Signupquery = "INSERT INTO SignUp(formNumber, emailId, Phonenumber, Password_firld) VALUES(?, ?, ?, ?)";
+                PreparedStatement pstmt = con1.connection.prepareStatement(Signupquery);
+                pstmt.setString(1, formNumber);
+                pstmt.setString(2, email);
+                pstmt.setString(3, phone);
+                pstmt.setString(4, password);
+                pstmt.executeUpdate();
+                pstmt.close();
 
-             if (!password.equals(confirmPassword)) {
-                 JOptionPane.showMessageDialog(this, "Passwords do not match.");
-                 return;
-             }
+                JOptionPane.showMessageDialog(this,"+formNummber+");
 
 
-         }else if(e.getSource() == clearbtn) // CLEARING ALL TEXT AND PASSWORD FIELD
-         {
-             emailfield.setText("");
-             phonefield.setText("");
-             pa_passwordfield.setText("");
-             rp_passwordfield.setText("");
+//                new Login();
+//                setVisible(false);
+//             new Open_new_account();
+//             setVisible(false);
+
 
          }
 
-        }catch (Exception E){
-            E.fillInStackTrace();
+        }catch (SQLException sqlException) {
+            System.out.println("SQL Exception: " + sqlException.getMessage());
         }
     }
 

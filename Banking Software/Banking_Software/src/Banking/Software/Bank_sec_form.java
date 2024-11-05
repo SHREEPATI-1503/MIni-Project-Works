@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
 
 public class Bank_sec_form extends JFrame implements ActionListener {
 
@@ -138,53 +139,67 @@ public class Bank_sec_form extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+
     @Override
     public void actionPerformed(ActionEvent e) {
-
         String phone_number = phone_field.getText().trim();
         String addr1 = addr1_field.getText().trim();
         String pincode = pincode_field.getText().trim();
         String city = city_field.getText().trim();
         String state = state_field.getText().trim();
+        String email = email_field.getText().trim();
 
-        String email= email_field.getText().trim();
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        String phoneRegex = "^[0-9]+[0-9]+[0-9]$";
+        String phoneRegex = "^[0-9]{10}$"; // Adjust if necessary
 
-        try{
-
-            if(e.getSource() == Clr_btn)
-            {
-               phone_field.setText("");
-               email_field.setText("");
-               addr1_field.setText("");
-               pincode_field.setText("");
-               city_field.setText("");
-               state_field.setText("");
-            }
-
-            if (e.getSource() == Next_btn)
-            {
-                if (phone_number.isEmpty() || email.isEmpty() || addr1.isEmpty() || pincode.isEmpty() || city.isEmpty() || state.isEmpty())
-                {
+        if (e.getSource() == Clr_btn) {
+            phone_field.setText("");
+            email_field.setText("");
+            addr1_field.setText("");
+            pincode_field.setText("");
+            city_field.setText("");
+            state_field.setText("");
+        } else {
+            try {
+                if (phone_number.isEmpty() || email.isEmpty() || addr1.isEmpty() || pincode.isEmpty() || city.isEmpty() || state.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Please Enter all the Details");
                     return;
                 }
                 if (!email.matches(emailRegex)) {
                     JOptionPane.showMessageDialog(this, "Please enter a valid email address.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 if (!phone_number.matches(phoneRegex)) {
                     JOptionPane.showMessageDialog(this, "Please enter a valid Phone Number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
 
+                DatabaseConnection con2 = new DatabaseConnection();
+                if (con2.connection == null) {
+                    JOptionPane.showMessageDialog(this, "Database connection failed!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-
+                String secondquery = "INSERT INTO account(phoneNumber, address, pincode, city, state, emailId) VALUES(?, ?, ?, ?, ?, ?)";
+                PreparedStatement pstmt = con2.connection.prepareStatement(secondquery);
+                pstmt.setString(1, phone_number);
+                pstmt.setString(2, addr1);
+                pstmt.setString(3, pincode);
+                pstmt.setString(4, city);
+                pstmt.setString(5, state);
+                pstmt.setString(6, email);
+                pstmt.executeUpdate();
+                pstmt.close(); // Close the PreparedStatement
+                con2.connection.close(); // Close the connection
+                JOptionPane.showMessageDialog(this, "Data saved successfully!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage());
             }
-
-        }catch (Exception E){
-            E.fillInStackTrace();
         }
     }
+
+
 
     public static void main(String [] a)
     {
