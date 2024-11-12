@@ -10,9 +10,13 @@ public class Bank_frth_form extends JFrame implements ActionListener {
     JComboBox<String> AccountOwner;
     JRadioButton Saving_Ac, Current_Ac, Fixed_Ac, Recurring_Ac;
     JButton Next_btn, Clr_btn;
-    Bank_frth_form()
+
+    String fNumber;
+    Bank_frth_form(String fNumber)
     {
-        JLabel label0 = new JLabel("Page: 4");
+
+        this.fNumber = fNumber;
+        JLabel label0 = new JLabel(fNumber);
         label0.setBounds(900, 15, 350, 50);
         label0.setFont(new Font("Arial", Font.BOLD, 18));
         label0.setForeground(new Color(41, 40, 40));
@@ -157,6 +161,10 @@ public class Bank_frth_form extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        String formNumber = fNumber;
+
+
+
         String ownerType = (String) AccountOwner.getSelectedItem();
         String accountTp = null;
         if (Saving_Ac.isSelected()) {
@@ -196,8 +204,5 @@ public class Bank_frth_form extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String a [])
-    {
-        new Bank_frth_form();
-    }
+
 }

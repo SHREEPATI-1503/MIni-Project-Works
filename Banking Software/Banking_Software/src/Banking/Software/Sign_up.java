@@ -9,9 +9,9 @@ import java.util.Random;
 
 public class Sign_up extends JFrame implements ActionListener {
 
-    Random ran = new Random();
-    long first4 = (ran.nextLong() % 9000L) + 1000L;
-    String first = " " + Math.abs(first4);
+    formNUmber formNumberobj = new formNUmber();
+    String formNumber = formNumberobj.generateFormNo();
+    // form number generated
     // DECLARING THE GLOBAL VARIABLE FOR TEXTFIELE AND LABEL AND BUTTONS
     JLabel label1,label2,label3,label4,label5; // DECLARING THE LABEL
     JTextField emailfield, phonefield; // DECLARING THE 2 TEXT FIELD
@@ -133,10 +133,7 @@ public class Sign_up extends JFrame implements ActionListener {
         String password = new String(pa_passwordfield.getPassword());
         String confirmPassword = new String(rp_passwordfield.getPassword());
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
-        String formNumber = first;
-
-
-
+        String fNumber = formNumber;
 
 
         if(e.getSource() == clearbtn) // CLEARING ALL TEXT AND PASSWORD FIELD
@@ -165,14 +162,14 @@ public class Sign_up extends JFrame implements ActionListener {
              DatabaseConnection con1 = new DatabaseConnection();
                 String Signupquery = "INSERT INTO SignUp(formNumber, emailId, Phonenumber, Password_firld) VALUES(?, ?, ?, ?)";
                 PreparedStatement pstmt = con1.connection.prepareStatement(Signupquery);
-                pstmt.setString(1, formNumber);
+                pstmt.setString(1, fNumber);
                 pstmt.setString(2, email);
                 pstmt.setString(3, phone);
                 pstmt.setString(4, password);
                 pstmt.executeUpdate();
                 pstmt.close();
 
-                JOptionPane.showMessageDialog(this,"+formNummber+");
+                new Login();
 
 
 //                new Login();

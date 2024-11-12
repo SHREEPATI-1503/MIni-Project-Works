@@ -4,15 +4,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Bank_third_form extends JFrame implements ActionListener {
 
-    JTextField adhar_field, pan_field,income_field;
+    JTextField adhar_field, pan_field, income_field;
     JButton clr_btn, Next_btn;
     JRadioButton r1, r2;
     JComboBox<String> occupationComboBox; // ComboBox for Occupation
 
-    Bank_third_form() {
+    String fNumber;
+
+    Bank_third_form(String fNumber) {
+        this.fNumber = fNumber;
+
         JLabel label0 = new JLabel("Page: 3");
         label0.setBounds(900, 15, 350, 50);
         label0.setFont(new Font("Arial", Font.BOLD, 18));
@@ -56,7 +63,7 @@ public class Bank_third_form extends JFrame implements ActionListener {
         add(label3);
 
         // Occupation ComboBox
-        String[] occupations = {"Select Options","Student","Employed","Self Employed","Businessman","Farmer","Other"};
+        String[] occupations = {"Select Options", "Student", "Employed", "Self Employed", "Businessman", "Farmer", "Other"};
         occupationComboBox = new JComboBox<>(occupations);
         occupationComboBox.setFont(new Font("Arial", Font.PLAIN, 20));
         occupationComboBox.setBounds(450, 273, 380, 40);
@@ -84,19 +91,17 @@ public class Bank_third_form extends JFrame implements ActionListener {
         buttonGroup.add(r1);
         buttonGroup.add(r2);
 
-        JLabel labelc = new JLabel("yearly Income:  ");
+        JLabel labelc = new JLabel("Yearly Income:  ");
         labelc.setBounds(250, 410, 350, 50);
         labelc.setFont(new Font("Arial", Font.BOLD, 20));
         labelc.setForeground(new Color(41, 40, 40));
         add(labelc);
-
 
         income_field = new JTextField();
         income_field.setFont(new Font("Arial", Font.PLAIN, 20));
         income_field.setBackground(new Color(255, 255, 255));
         income_field.setBounds(450, 413, 380, 40);
         add(income_field);
-
 
         clr_btn = new JButton("Clear");
         clr_btn.setForeground(new Color(0, 0, 0));
@@ -129,10 +134,10 @@ public class Bank_third_form extends JFrame implements ActionListener {
         String income = income_field.getText().trim();
         String occupation = (String) occupationComboBox.getSelectedItem();
         String maritalStatus = r1.isSelected() ? "Married" : "Unmarried";
-        String panRegex = "^[a-zA-Z0-9]+[a-zA-Z0-9]+[a-zA-Z]$";
-        String Adharregix = "^[0-9]+[0-9]+[0-9]$";
-        String incomeregix = "^[0-9]+[0-9]+[0-9]$";
-
+        String panRegex = "^[A-Z]{5}[0-9]{4}[A-Z]{1}$";  // PAN regex updated
+        String adharRegex = "^[0-9]{12}$"; // Adhar regex updated (12 digit number)
+        String incomeRegex = "^[0-9]+$"; // Income regex to allow only digits
+        String formNumber = fNumber;
 
         if (e.getSource() == clr_btn) {
             adhar_field.setText("");
@@ -144,38 +149,64 @@ public class Bank_third_form extends JFrame implements ActionListener {
         }
 
         if (e.getSource() == Next_btn) {
-            if (adharNumber.isEmpty() || panNumber.isEmpty() || income.isEmpty())
-            {
+            if (adharNumber.isEmpty() || panNumber.isEmpty() || income.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please Enter All Details.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-            else if (occupationComboBox.getSelectedItem().equals("Select Options")) {
-                JOptionPane.showMessageDialog(this, "Please select an option.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            else if (!r1.isSelected() && !r2.isSelected()){
+            } else if (occupationComboBox.getSelectedItem().equals("Select Options")) {
+                JOptionPane.showMessageDialog(this, "Please select an occupation.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!r1.isSelected() && !r2.isSelected()) {
                 JOptionPane.showMessageDialog(this, "Please select marital status.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            else if (panNumber.equals(panRegex))
-            {
-                JOptionPane.showMessageDialog(this, "Please Enter Pan Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            else if (!adharNumber.matches(Adharregix)){
+            } else if (!panNumber.matches(panRegex)) {
+                JOptionPane.showMessageDialog(this, "Please Enter PAN Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!adharNumber.matches(adharRegex)) {
                 JOptionPane.showMessageDialog(this, "Please Enter Adhar Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else if (!income.matches(incomeRegex)) {
+                JOptionPane.showMessageDialog(this, "Please Enter income correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    // Database connection
+                    DatabaseConnection con2 = new DatabaseConnection();
+                    if (con2.connection == null) {
+                        JOptionPane.showMessageDialog(this, "Database connection failed!", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Check if formNumber exists in the account table (foreign key check)
+                    String checkFormNumberQuery = "SELECT COUNT(*) FROM account WHERE formNumber = ?";
+                    PreparedStatement checkStmt = con2.connection.prepareStatement(checkFormNumberQuery);
+                    checkStmt.setString(1, formNumber);
+                    ResultSet rs = checkStmt.executeQuery();
+                    rs.next();
+                    if (rs.getInt(1) == 0) {
+                        JOptionPane.showMessageDialog(this, "Form number does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // If formNumber exists, update data in the account table
+                    String updateQuery = "UPDATE account SET adharNumber = ?, panNumber = ?, occupation = ?, status = ?, yearlyIncome = ? WHERE formNumber = ?";
+                    PreparedStatement pstmt = con2.connection.prepareStatement(updateQuery);
+                    pstmt.setString(1, adharNumber);
+                    pstmt.setString(2, panNumber);
+                    pstmt.setString(3, occupation);
+                    pstmt.setString(4, maritalStatus);
+                    pstmt.setString(5, income);
+                    pstmt.setString(6, formNumber);  // Make sure to update based on formNumber
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    if (rowsAffected > 0) {
+                        new Bank_frth_form(formNumber);
+                        setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Error updating data.");
+                    }
+
+                    checkStmt.close();
+                    pstmt.close();
+                    con2.connection.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
-            else if (!income.matches(incomeregix)){
-                JOptionPane.showMessageDialog(this, "Please Enter income Number correctly.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-
-        }else {
-
         }
-    }
-
-    public static void main(String[] args) {
-        new Bank_third_form();
     }
 }
